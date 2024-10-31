@@ -6,12 +6,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
   <title>Vanilla JavaScript App</title>
+  <script src="https://cdn.jsdelivr.net/npm/oidc-client"></script> <!-- Adding OIDC client -->
 </head>
 
 <body>
   <main>
     <h1>Vanilla JavaScript App</h1>
+    <button id="login">Test Login with OneLogin</button>
+    <button id="logout" style="display: none;">Logout</button>
   </main>
+
+  <script>
+    // Configuration for OneLogin OIDC
+    const config = {
+      authority: "https://ydr-playground.onelogin.com/oidc/2", // Replace with your OneLogin issuer URL
+      client_id: "68d05ca0-79b0-013d-2776-3e1a05e09fbf242704", // Replace with your OneLogin app's client ID
+      redirect_uri: "https://green-water-0e0d4bf03.5.azurestaticapps.net/callback.html", // Replace with your redirect URI
+      response_type: "id_token token",
+      scope: "openid profile email"
+    };
+
+    const userManager = new Oidc.UserManager(config);
+
+    document.getElementById("login").addEventListener("click", function () {
+      userManager.signinRedirect();
+    });
+
+    document.getElementById("logout").addEventListener("click", function () {
+      userManager.signoutRedirect();
+    });
+
+    userManager.getUser().then(function (user) {
+      if (user) {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("logout").style.display = "block";
+        console.log("Logged in", user.profile);
+      } else {
+        console.log("User not logged in");
+      }
+    });
+  </script>
 </body>
 
 </html>
